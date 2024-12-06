@@ -6,18 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-
-interface Movie {
-  id: number;
-  title: string;
-  upvotes: number;
-  downvotes: number;
-  lastVoteTime: Date;
-}
+import { Movie } from '@/lib/db/queries';
 
 interface MovieVotingProps {
   movies: Movie[];
-  initialFilter: string;
 }
 
 function highlightMatch(text: string, highlight: string) {
@@ -38,7 +30,7 @@ function formatTimeAgo(date: Date) {
   return `${Math.floor(diffInSeconds / 86400)}d ago`;
 }
 
-export function MovieVoting({ movies, initialFilter }: MovieVotingProps) {
+export function MovieVoting({ movies }: MovieVotingProps) {
   const [isPending, startTransition] = useTransition();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();

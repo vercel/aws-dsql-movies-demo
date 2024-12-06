@@ -1,3 +1,4 @@
+import { awsCredentialsProvider } from '@vercel/functions/oidc';
 import { DsqlSigner } from '@aws-sdk/dsql-signer';
 import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
@@ -11,9 +12,18 @@ let pool: Pool | null = null;
 let db: NodePgDatabase<typeof schema> | null = null;
 
 export async function getToken() {
+  const env = process.env.VERCEL_ENV;
+  const isNotLocal = env === 'preview' || env === 'production';
+  const credentials = isNotLocal && {
+    credentials: awsCredentialsProvider({
+      roleArn: process.env.AWS_ROLE_ARN!,
+    }),
+  };
+
   const signer = new DsqlSigner({
     hostname: process.env.DB_CLUSTER_ENDPOINT!,
     region: 'us-east-1',
+    ...credentials,
   });
 
   const token = await signer.getDbConnectAdminAuthToken();

@@ -8,14 +8,14 @@ export default async function HomePage({
 }: {
   searchParams: Promise<{ filter: string | undefined }>;
 }) {
-  const { filter } = await searchParams;
+  // const { filter } = await searchParams;
   const movies = await getMovies();
 
   return (
     <div className="container mx-auto p-4 max-w-3xl">
       <h1 className="text-2xl font-bold mb-4">Vote for Your Favorite Movies</h1>
       <Suspense fallback={<Loading />}>
-        <MovieVoting movies={movies} filter={filter} />
+        <MovieVoting movies={movies} />
       </Suspense>
     </div>
   );
