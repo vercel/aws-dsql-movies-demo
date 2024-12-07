@@ -1,5 +1,5 @@
 {
-  "id": "b1e59fea-7507-43a8-a423-7b671fe77205",
+  "id": "c645bcc2-de66-4b17-9a98-a16632f4189d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -20,14 +20,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "upvotes": {
-          "name": "upvotes",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "downvotes": {
-          "name": "downvotes",
+        "score": {
+          "name": "score",
           "type": "integer",
           "primaryKey": false,
           "notNull": true

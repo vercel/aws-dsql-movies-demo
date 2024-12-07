@@ -26,14 +26,9 @@ async function main() {
           values: movieTitles,
           isUnique: true,
         }),
-        upvotes: f.int({
+        seed: f.int({
           minValue: 0,
           maxValue: 100,
-          isUnique: false,
-        }),
-        downvotes: f.int({
-          minValue: 0,
-          maxValue: 0,
           isUnique: false,
         }),
         lastVoteTime: f.datetime(),
