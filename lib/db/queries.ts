@@ -13,24 +13,27 @@ export interface Movie {
 export async function getMovies(sessionId?: string) {
   const db = await getConnection();
 
+  const hasVoted = sessionId
+    ? sql<boolean>`CASE WHEN COUNT(${votes.id}) > 0 THEN true ELSE false END`
+    : sql<boolean>`false`;
+
   const moviesWithVotes = await db
     .select({
       id: movies.id,
       title: movies.title,
       score: movies.score,
       lastVoteTime: movies.lastVoteTime,
-      hasVoted: sessionId
-        ? sql<boolean>`CASE WHEN ${votes.id} IS NOT NULL THEN true ELSE false END`
-        : sql<boolean>`false`,
+      hasVoted,
     })
     .from(movies)
     .leftJoin(
       votes,
       and(
         eq(votes.movieId, movies.id),
-        sessionId ? eq(votes.sessionId, sessionId) : undefined,
+        sessionId ? eq(votes.sessionId, sql`${sessionId}::uuid`) : undefined,
       ),
-    );
+    )
+    .groupBy(movies.id, movies.title, movies.score, movies.lastVoteTime);
 
   return moviesWithVotes.map((movie) => ({
     ...movie,
