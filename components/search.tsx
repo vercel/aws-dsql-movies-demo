@@ -44,7 +44,7 @@ export function Search({ inputValue = '', onChange }: SearchInputProps) {
       ref={inputRef}
       value={inputValue}
       placeholder="Search movies..."
-      className="text-base bg-white w-full"
+      className="text-base bg-white dark:bg-gray-950 text-black dark:text-white focus:border-black dark:border-gray-700 dark:focus:border-gray-200 w-full"
       onChange={handleInput}
     />
   );

@@ -1,3 +1,4 @@
+import Explanation from '@/components/explanation';
 import Loading from '@/components/loading';
 import { MovieVoting } from '@/components/movie-voting';
 import { getMovies } from '@/lib/db/queries';
@@ -13,7 +14,7 @@ export default async function HomePage({
 
   return (
     <div className="container mx-auto p-4 max-w-3xl">
-      <h1 className="text-2xl font-bold mb-4">Vote for Your Favorite Movies</h1>
+      <Explanation />
       <Suspense fallback={<Loading />}>
         <MovieVoting movies={movies} highlight={filter || ''} />
       </Suspense>

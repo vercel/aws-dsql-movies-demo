@@ -12,7 +12,10 @@ export function highlightMatch(text: string, highlight: string) {
     return text;
   }
   const regex = new RegExp(`(${highlight})`, 'gi');
-  return text.replace(regex, '<span class="bg-yellow-200">$1</span>');
+  return text.replace(
+    regex,
+    '<span class="bg-yellow-300 dark:bg-yellow-700">$1</span>',
+  );
 }
 
 interface MovieVotingProps {
@@ -96,7 +99,7 @@ export function MovieVoting({
         {sortedAndFilteredMovies.map((movie) => (
           <li
             key={movie.id}
-            className="flex items-center justify-between p-2 bg-gray-100 rounded"
+            className="text-black dark:text-white flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-900 rounded"
           >
             <div className="flex items-center flex-grow">
               <div className="flex items-center space-x-1 mr-3">
