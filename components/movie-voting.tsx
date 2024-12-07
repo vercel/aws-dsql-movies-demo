@@ -80,6 +80,7 @@ export function MovieVoting({
         ...movie,
         score: movie.score + (voteType === 'up' ? 1 : -1),
         lastVoteTime: new Date(),
+        hasVoted: true,
       };
 
       mutate({
@@ -87,7 +88,7 @@ export function MovieVoting({
         filter: state.filter,
       });
 
-      await voteAction(updatedMovie);
+      await voteAction(movie, updatedMovie.score, updatedMovie.lastVoteTime);
     });
   };
 
@@ -109,6 +110,7 @@ export function MovieVoting({
                   onClick={() => handleVote(movie, 'up')}
                   className="p-0 h-6 w-6"
                   aria-label={`Upvote ${movie.title}`}
+                  disabled={movie.hasVoted}
                 >
                   <ChevronUp className="w-4 h-4" />
                 </Button>
@@ -121,6 +123,7 @@ export function MovieVoting({
                   onClick={() => handleVote(movie, 'down')}
                   className="p-0 h-6 w-6"
                   aria-label={`Downvote ${movie.title}`}
+                  disabled={movie.hasVoted}
                 >
                   <ChevronDown className="w-4 h-4" />
                 </Button>
