@@ -44,8 +44,6 @@ export async function getConnection() {
       port: 5432,
       ssl: true,
       max: 20,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 2000,
     });
     db = drizzle(pool, { schema });
     return db;
