@@ -10,15 +10,21 @@ config();
 
 let pool: Pool | null = null;
 let db: NodePgDatabase<typeof schema> | null = null;
+let cachedToken: { token: string; expiresAt: Date } | null = null;
 
 export async function getToken() {
+  const now = new Date();
+  if (cachedToken && cachedToken.expiresAt > now) {
+    return cachedToken.token;
+  }
+
   const env = process.env.VERCEL_ENV;
   const isNotLocal = env === 'preview' || env === 'production';
-  const credentials = isNotLocal && {
-    credentials: awsCredentialsProvider({
+  const credentials =
+    isNotLocal &&
+    awsCredentialsProvider({
       roleArn: process.env.AWS_ROLE_ARN!,
-    }),
-  };
+    });
 
   const signer = new DsqlSigner({
     hostname: process.env.DB_CLUSTER_ENDPOINT!,
@@ -27,19 +33,37 @@ export async function getToken() {
   });
 
   const token = await signer.getDbConnectAdminAuthToken();
+
+  // Token is valid for 15 minutes; set to 14 minutes to be safe
+  const expiresAt = new Date(now.getTime() + 14 * 60 * 1000);
+  cachedToken = { token, expiresAt };
+
   return token;
 }
 
 export async function getConnection() {
-  if (db) {
+  const now = new Date();
+
+  // Check if pool exists and token is still valid
+  if (db && cachedToken && cachedToken.expiresAt > now) {
     return db;
   }
 
+  // Token is expired or pool is null, recreate pool and db
   try {
+    if (pool) {
+      // Close the existing pool
+      await pool.end();
+      pool = null;
+      db = null;
+    }
+
+    const token = await getToken();
+
     pool = new Pool({
       host: process.env.DB_CLUSTER_ENDPOINT!,
       user: 'admin',
-      password: await getToken(),
+      password: token,
       database: 'postgres',
       port: 5432,
       ssl: true,
