@@ -22,6 +22,7 @@ export function highlightMatch(text: string, highlight: string) {
 interface MovieVotingProps {
   movies: Movie[];
   highlight: string;
+  queryTimeMs: string;
 }
 
 function formatTimeAgo(date: Date) {
@@ -42,6 +43,7 @@ type MovieState = {
 export function MovieVoting({
   movies: initialMovies,
   highlight,
+  queryTimeMs,
 }: MovieVotingProps) {
   const [_, startTransition] = useTransition();
 
@@ -142,8 +144,13 @@ export function MovieVoting({
           </li>
         ))}
       </ul>
-      {sortedAndFilteredMovies.length === 0 && (
+      {sortedAndFilteredMovies.length === 0 ? (
         <p className="text-center text-gray-500">No movies found</p>
+      ) : (
+        <p className="text-xs italic">
+          Fetched {initialMovies.length} movies in {queryTimeMs}
+          ms
+        </p>
       )}
     </div>
   );

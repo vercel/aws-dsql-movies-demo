@@ -59,7 +59,6 @@ export async function getConnection() {
     }
 
     const token = await getToken();
-    console.log(token);
 
     pool = new Pool({
       host: process.env.DB_CLUSTER_ENDPOINT!,

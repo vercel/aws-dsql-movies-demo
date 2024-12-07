@@ -24,7 +24,13 @@ async function Movies({ searchParams }: Props) {
   const { filter } = await searchParams;
   const cookieStore = await cookies();
   const sessionId = cookieStore.get('sessionId')?.value;
-  const movies = await getMovies(sessionId);
+  const { movies, queryTimeMs } = await getMovies(sessionId);
 
-  return <MovieVoting movies={movies} highlight={filter || ''} />;
+  return (
+    <MovieVoting
+      movies={movies}
+      highlight={filter || ''}
+      queryTimeMs={queryTimeMs}
+    />
+  );
 }
