@@ -102,7 +102,7 @@ export function MovieVoting({
             className="text-black dark:text-white flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-900 rounded"
           >
             <div className="flex items-center flex-grow">
-              <div className="flex items-center space-x-1 mr-3">
+              <div className="flex items-center space-x-1 mr-3 mb-auto md:mb-0">
                 <Button
                   size="sm"
                   variant="ghost"
@@ -132,7 +132,7 @@ export function MovieVoting({
                 }}
               />
             </div>
-            <span className="text-xs text-gray-400 ml-2">
+            <span className="md:flex hidden text-xs text-gray-400 ml-2">
               {formatTimeAgo(new Date(movie.lastVoteTime))}
             </span>
           </li>
