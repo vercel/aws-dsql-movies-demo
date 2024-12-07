@@ -19,7 +19,9 @@ export async function getMovies(sessionId?: string) {
       title: movies.title,
       score: movies.score,
       lastVoteTime: movies.lastVoteTime,
-      hasVoted: sql<boolean>`${votes.id} is not null`,
+      hasVoted: sessionId
+        ? sql<boolean>`CASE WHEN ${votes.id} IS NOT NULL THEN true ELSE false END`
+        : sql<boolean>`false`,
     })
     .from(movies)
     .leftJoin(

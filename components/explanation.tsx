@@ -31,7 +31,7 @@ export default function Explanation() {
         </p>
       </details>
 
-      <details className="group mb-2">
+      <details className="group">
         <summary className="cursor-pointer hover:text-gray-900 dark:hover:text-white">
           <span className="pl-1">
             How is DSQL different from other databases?
@@ -56,12 +56,6 @@ export default function Explanation() {
           </Link>
         </p>
       </details>
-
-      <p className="mb-2">
-        <em className="text-amber-800 dark:text-yellow-300 not-italic font-normal">
-          💡 Try quickly voting on movies to see their scores change!
-        </em>
-      </p>
     </div>
   );
 }

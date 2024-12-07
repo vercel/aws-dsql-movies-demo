@@ -6,6 +6,7 @@ import { ChevronUp, ChevronDown } from 'lucide-react';
 import { Movie } from '@/lib/db/queries';
 import { voteAction } from '@/lib/db/actions';
 import { Search } from './search';
+import { cn } from '@/lib/utils';
 
 export function highlightMatch(text: string, highlight: string) {
   if (!highlight.trim()) {
@@ -108,7 +109,7 @@ export function MovieVoting({
                   size="sm"
                   variant="ghost"
                   onClick={() => handleVote(movie, 'up')}
-                  className="p-0 h-6 w-6"
+                  className={cn('p-0 h-6 w-6', movie.hasVoted && '!opacity-10')}
                   aria-label={`Upvote ${movie.title}`}
                   disabled={movie.hasVoted}
                 >
@@ -121,7 +122,7 @@ export function MovieVoting({
                   size="sm"
                   variant="ghost"
                   onClick={() => handleVote(movie, 'down')}
-                  className="p-0 h-6 w-6"
+                  className={cn('p-0 h-6 w-6', movie.hasVoted && '!opacity-10')}
                   aria-label={`Downvote ${movie.title}`}
                   disabled={movie.hasVoted}
                 >
