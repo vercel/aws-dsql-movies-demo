@@ -22,7 +22,16 @@ export default function Explanation() {
           <span className="pl-1">How does this work?</span>
         </summary>
         <p className="p-5 mt-2 bg-gray-100 dark:bg-gray-800">
-          Movies are fetched from the Postgres database when the page loads.
+          Movies are fetched from the Postgres database when the page loads. It
+          has been seeded with the top 5000 movies from{' '}
+          <Link
+            href="https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata"
+            target="_blank"
+            rel="noreferrer"
+            className="text-gray-900 dark:text-white border-b border-gray-900 dark:border-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            TMDB.
+          </Link>{' '}
           When a user votes on a movie,{' '}
           <code className="bg-gray-200 dark:bg-gray-700 px-1">
             useOptimistic

@@ -11,7 +11,7 @@ export default function Loading() {
         disabled
       />
       <ul className="space-y-2">
-        {[...Array(10)].map((_, index) => (
+        {[...Array(8)].map((_, index) => (
           <li
             key={index}
             className="flex items-center justify-between p-2 bg-gray-100 rounded"

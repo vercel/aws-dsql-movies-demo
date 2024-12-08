@@ -23,6 +23,7 @@ interface MovieVotingProps {
   movies: Movie[];
   highlight: string;
   queryTimeMs: string;
+  totalRecords: number;
 }
 
 function formatTimeAgo(date: Date) {
@@ -44,6 +45,7 @@ export function MovieVoting({
   movies: initialMovies,
   highlight,
   queryTimeMs,
+  totalRecords,
 }: MovieVotingProps) {
   const [_, startTransition] = useTransition();
 
@@ -148,7 +150,8 @@ export function MovieVoting({
         <p className="text-center text-gray-500">No movies found</p>
       ) : (
         <p className="text-xs italic">
-          Fetched {initialMovies.length} movies in {queryTimeMs}
+          Fetched {totalRecords} movie{totalRecords == 1 ? '' : 's'} in{' '}
+          {queryTimeMs}
           ms
         </p>
       )}

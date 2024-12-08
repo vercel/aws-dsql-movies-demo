@@ -33,6 +33,7 @@
     "@types/node": "^22.10.1",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",
+    "csv-parser": "^3.0.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.16",
     "typescript": "^5.7.2"
