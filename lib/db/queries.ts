@@ -1,6 +1,6 @@
 import { getConnection } from './drizzle';
 import { movies, votes } from './schema';
-import { and, eq, ilike, sql } from 'drizzle-orm';
+import { and, eq, ilike, sql, desc } from 'drizzle-orm';
 import { performance } from 'perf_hooks';
 
 export interface Movie {
@@ -17,26 +17,33 @@ export interface MoviesResult {
   queryTimeMs: string;
 }
 
-export async function getMovies(
-  sessionId?: string,
-  filter?: string,
-): Promise<MoviesResult> {
+export async function getMovies(sessionId?: string, filter?: string) {
   const db = await getConnection();
   const startTime = performance.now();
-  const conditions = [];
 
+  let filterCondition = undefined;
   if (filter) {
-    conditions.push(ilike(movies.title, `%${filter}%`));
+    filterCondition = ilike(movies.title, `%${filter}%`);
   }
-
-  const whereCondition = conditions.length > 0 ? and(...conditions) : undefined;
 
   const totalRecordsResult = await db
     .select({ count: sql<number>`COUNT(*)` })
     .from(movies)
-    .where(whereCondition);
+    .where(filterCondition);
 
-  const totalRecords = totalRecordsResult[0]?.count || 0;
+  const totalRecords = Number(totalRecordsResult[0]?.count) || 0;
+
+  let moviesQuery = db
+    .select({
+      id: movies.id,
+      title: movies.title,
+      score: movies.score,
+      lastVoteTime: movies.lastVoteTime,
+    })
+    .from(movies)
+    .where(filterCondition)
+    .orderBy(desc(movies.score))
+    .limit(8);
 
   let moviesWithVotes;
 
@@ -47,7 +54,7 @@ export async function getMovies(
         title: movies.title,
         score: movies.score,
         lastVoteTime: movies.lastVoteTime,
-        hasVoted: sql<boolean>`BOOL_OR(votes.session_id = ${sessionId}::uuid)`,
+        hasVoted: sql<boolean>`CASE WHEN ${votes.sessionId} IS NOT NULL THEN true ELSE false END`,
       })
       .from(movies)
       .leftJoin(
@@ -57,23 +64,11 @@ export async function getMovies(
           eq(votes.sessionId, sql`${sessionId}::uuid`),
         ),
       )
-      .where(whereCondition)
-      .groupBy(movies.id, movies.title, movies.score, movies.lastVoteTime)
-      .orderBy(sql`${movies.score} DESC`)
+      .where(filterCondition)
+      .orderBy(desc(movies.score))
       .limit(8);
   } else {
-    moviesWithVotes = await db
-      .select({
-        id: movies.id,
-        title: movies.title,
-        score: movies.score,
-        lastVoteTime: movies.lastVoteTime,
-        hasVoted: sql<boolean>`false`,
-      })
-      .from(movies)
-      .where(whereCondition)
-      .orderBy(sql`${movies.score} DESC`)
-      .limit(8);
+    moviesWithVotes = await moviesQuery;
   }
 
   const endTime = performance.now();
@@ -83,6 +78,7 @@ export async function getMovies(
 
   const data = moviesWithVotes.map((movie) => ({
     ...movie,
+    // @ts-ignore
     hasVoted: Boolean(movie.hasVoted),
   }));
 

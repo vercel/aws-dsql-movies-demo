@@ -3,8 +3,9 @@ import {
   integer,
   timestamp,
   uuid,
-  uniqueIndex,
+  index,
   text,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core';
 
 export const movies = pgTable(
@@ -16,7 +17,14 @@ export const movies = pgTable(
     lastVoteTime: timestamp('last_vote_time').notNull(),
   },
   (table) => ({
-    scoreIdx: uniqueIndex('movies_score_idx').on(table.score),
+    scoreIdx: index('movies_score_idx').on(table.score),
+    groupByIdx: index('movies_group_by_idx').on(
+      table.id,
+      table.title,
+      table.score,
+      table.lastVoteTime,
+    ),
+    titleIdx: index('movies_title_idx').on(table.title),
   }),
 );
 

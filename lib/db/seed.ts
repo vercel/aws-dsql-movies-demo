@@ -9,7 +9,7 @@ import { config } from 'dotenv';
 config();
 
 async function readMovieTitlesFromCSV(): Promise<string[]> {
-  const movieTitles: string[] = [];
+  const movieTitles = new Set<string>();
   const csvFilePath = path.resolve(__dirname, 'movies.csv');
 
   return new Promise((resolve, reject) => {
@@ -18,12 +18,15 @@ async function readMovieTitlesFromCSV(): Promise<string[]> {
       .on('data', (row) => {
         const title = row.title?.trim();
         if (title) {
-          movieTitles.push(title);
+          movieTitles.add(title);
         }
       })
       .on('end', () => {
-        console.log(`Parsed ${movieTitles.length} movies from CSV.`);
-        resolve(movieTitles);
+        const uniqueMovieTitles = Array.from(movieTitles);
+        console.log(
+          `Parsed ${uniqueMovieTitles.length} unique movies from CSV.`,
+        );
+        resolve(uniqueMovieTitles);
       })
       .on('error', (error) => {
         console.error('Error reading CSV file:', error);
@@ -35,7 +38,6 @@ async function readMovieTitlesFromCSV(): Promise<string[]> {
 async function main() {
   const db = await getConnection();
   const movieTitles = await readMovieTitlesFromCSV();
-
   await seed(db, { movies }).refine((f) => ({
     movies: {
       columns: {
