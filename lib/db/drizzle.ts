@@ -29,7 +29,7 @@ export async function getToken() {
   const signer = new DsqlSigner({
     hostname: process.env.DB_CLUSTER_ENDPOINT!,
     region: 'us-east-1',
-    // ...credentials,
+    ...credentials,
   });
 
   const token = await signer.getDbConnectAdminAuthToken();
