@@ -58,7 +58,14 @@ export function MovieVoting({
 
   const sortedAndFilteredMovies = useMemo(() => {
     let result = [...state.movies];
-    result.sort((a, b) => b.score - a.score);
+    result.sort((a, b) => {
+      const scoreDiff = b.score - a.score;
+      if (scoreDiff !== 0) {
+        return scoreDiff;
+      } else {
+        return a.title.localeCompare(b.title);
+      }
+    });
 
     if (state.filter) {
       const lowercasedFilter = state.filter.toLowerCase();
