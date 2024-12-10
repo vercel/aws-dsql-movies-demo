@@ -18,18 +18,12 @@ export async function getToken() {
     return cachedToken.token;
   }
 
-  const env = process.env.VERCEL_ENV;
-  const isNotLocal = env === 'preview' || env === 'production';
-  const credentials =
-    isNotLocal &&
-    awsCredentialsProvider({
-      roleArn: process.env.AWS_ROLE_ARN!,
-    });
-
   const signer = new DsqlSigner({
     hostname: process.env.DB_CLUSTER_ENDPOINT!,
     region: 'us-east-1',
-    ...credentials,
+    credentials: awsCredentialsProvider({
+      roleArn: process.env.AWS_ROLE_ARN!,
+    }),
   });
 
   const token = await signer.getDbConnectAdminAuthToken();
