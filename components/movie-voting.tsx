@@ -156,10 +156,9 @@ export function MovieVoting({
       {sortedAndFilteredMovies.length === 0 ? (
         <p className="text-center text-gray-500">No movies found</p>
       ) : (
-        <p className="text-xs italic">
+        <p className="text-xs italic text-gray-500">
           Fetched {totalRecords} movie{totalRecords == 1 ? '' : 's'} in{' '}
-          {queryTimeMs}
-          ms
+          {queryTimeMs} ms (indexing not available)
         </p>
       )}
     </div>
