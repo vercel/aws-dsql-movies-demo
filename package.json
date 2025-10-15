@@ -2,6 +2,9 @@
   "name": "aws-dsql-movies-demo",
   "requires": true,
   "private": true,
+  "engine":{
+    "pnpm": ">9"
+  },
   "packages": {
     "dependencies": {
       "@aws-sdk/dsql-signer": "^3.705.0",
