@@ -1,38 +1,45 @@
 {
   "name": "aws-dsql-movies-demo",
-  "requires": true,
   "private": true,
   "engine":{
     "pnpm": ">9"
   },
-  "packages": {
-    "dependencies": {
-      "@aws-sdk/dsql-signer": "^3.705.0",
-      "@radix-ui/react-slot": "^1.1.0",
-      "@types/pg": "^8.11.10",
-      "@vercel/functions": "^1.5.1",
-      "class-variance-authority": "^0.7.1",
-      "clsx": "^2.1.1",
-      "dotenv": "^16.4.7",
-      "drizzle-kit": "^0.28.1",
-      "drizzle-orm": "^0.36.4",
-      "drizzle-seed": "^0.1.2",
-      "lucide-react": "^0.468.0",
-      "next": "15.0.4-canary.45",
-      "pg": "^8.13.1",
-      "react": "^19.0.0",
-      "react-dom": "^19.0.0",
-      "tailwind-merge": "^2.5.5",
-      "tailwindcss-animate": "^1.0.7"
-    },
-    "devDependencies": {
-      "@types/node": "^22.10.1",
-      "@types/react": "^19.0.1",
-      "@types/react-dom": "^19.0.1",
-      "csv-parser": "^3.0.0",
-      "postcss": "^8.4.49",
-      "tailwindcss": "^3.4.16",
-      "typescript": "^5.7.2"
-    }
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "db:seed": "npx tsx lib/db/seed.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:migrate": "npx tsx lib/db/migrate.ts",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "@aws-sdk/dsql-signer": "^3.705.0",
+    "@radix-ui/react-slot": "^1.1.0",
+    "@types/pg": "^8.11.10",
+    "@vercel/functions": "^1.5.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "dotenv": "^16.4.7",
+    "drizzle-kit": "^0.28.1",
+    "drizzle-orm": "^0.36.4",
+    "drizzle-seed": "^0.1.2",
+    "lucide-react": "^0.468.0",
+    "next": "15.0.4-canary.45",
+    "pg": "^8.13.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^2.5.5",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.1",
+    "csv-parser": "^3.0.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16",
+    "typescript": "^5.7.2"
   }
 }
