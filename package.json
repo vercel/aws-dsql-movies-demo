@@ -1,5 +1,9 @@
 {
+  "name": "aws-dsql-movies-demo",
   "private": true,
+  "engine":{
+    "pnpm": ">9"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",

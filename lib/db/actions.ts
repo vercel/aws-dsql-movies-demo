@@ -1,9 +1,7 @@
 'use server';
 
 import { Movie } from '@/lib/db/queries';
-import { getConnection } from './drizzle';
-import { movies, sessions, votes } from './schema';
-import { eq, and } from 'drizzle-orm';
+import { getConnection } from './db';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
@@ -12,46 +10,43 @@ export async function voteAction(
   score: number,
   lastVoteTime: Date,
 ) {
-  const db = await getConnection();
+  const pool = await getConnection();
   const cookieStore = await cookies();
 
   let sessionId = cookieStore.get('sessionId')?.value;
   if (!sessionId) {
-    const newSession = await db
-      .insert(sessions)
-      .values({
-        // 30 days from now
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-      })
-      .returning({ id: sessions.id });
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    const result = await pool.query(
+      'INSERT INTO sessions (expires_at) VALUES ($1) RETURNING id',
+      [expiresAt]
+    );
 
-    sessionId = newSession[0].id;
-    cookieStore.set('sessionId', sessionId, {
+    sessionId = result.rows[0].id;
+    cookieStore.set('sessionId', String(sessionId), {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
     });
   }
 
-  const existingVote = await db
-    .select()
-    .from(votes)
-    .where(and(eq(votes.sessionId, sessionId), eq(votes.movieId, movie.id)))
-    .limit(1);
+  const existingVote = await pool.query(
+    'SELECT id FROM votes WHERE session_id = $1 AND movie_id = $2 LIMIT 1',
+    [sessionId, movie.id]
+  );
 
-  if (existingVote.length > 0) {
+  if (existingVote.rows.length > 0) {
     return movie;
   }
 
-  await db.insert(votes).values({
-    sessionId,
-    movieId: movie.id,
-  });
+  await pool.query(
+    'INSERT INTO votes (session_id, movie_id) VALUES ($1, $2)',
+    [sessionId, movie.id]
+  );
 
-  await db
-    .update(movies)
-    .set({ score, lastVoteTime })
-    .where(eq(movies.id, movie.id));
+  await pool.query(
+    'UPDATE movies SET score = $1, last_vote_time = $2 WHERE id = $3',
+    [score, lastVoteTime, movie.id]
+  );
 
   revalidatePath('/');
 }
