@@ -1,11 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import csv from 'csv-parser';
-import { seed } from 'drizzle-seed';
-import { closeConnection, getConnection } from './drizzle';
-import { movies } from './schema';
+import { closeConnection, getConnection } from './db';
 import { config } from 'dotenv';
 
+config({ path: '.env.local' });
 config();
 
 async function readMovieTitlesFromCSV(): Promise<string[]> {
@@ -36,29 +35,35 @@ async function readMovieTitlesFromCSV(): Promise<string[]> {
 }
 
 async function main() {
-  const db = await getConnection();
+  const pool = await getConnection();
   const movieTitles = await readMovieTitlesFromCSV();
-  await seed(db, { movies }).refine((f) => ({
-    movies: {
-      columns: {
-        id: f.intPrimaryKey(),
-        title: f.valuesFromArray({
-          values: movieTitles,
-          isUnique: true,
-        }),
-        score: f.int({
-          minValue: 0,
-          maxValue: 0,
-          isUnique: false,
-        }),
-        lastVoteTime: f.default({
-          defaultValue: new Date('2024-12-07'),
-        }),
-      },
-      count: movieTitles.length,
-    },
-  }));
+  const defaultDate = new Date('2024-12-07');
+  const batchSize = 200;
 
+  for (let i = 0; i < movieTitles.length; i += batchSize) {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      
+      const batch = movieTitles.slice(i, i + batchSize);
+      for (let j = 0; j < batch.length; j++) {
+        await client.query(
+          'INSERT INTO movies (id, title, score, last_vote_time) VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO NOTHING',
+          [i + j + 1, batch[j], 0, defaultDate]
+        );
+      }
+      
+      await client.query('COMMIT');
+      console.log(`Inserted ${Math.min(i + batchSize, movieTitles.length)} / ${movieTitles.length} movies`);
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  console.log(`Seeded ${movieTitles.length} movies`);
   await closeConnection();
   process.exit();
 }

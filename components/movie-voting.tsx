@@ -158,7 +158,7 @@ export function MovieVoting({
       ) : (
         <p className="text-xs italic text-gray-500">
           Fetched {totalRecords} movie{totalRecords == 1 ? '' : 's'} in{' '}
-          {queryTimeMs} ms (indexing not available)
+          {queryTimeMs} ms 
         </p>
       )}
     </div>

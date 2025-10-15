@@ -1,6 +1,4 @@
-import { getConnection } from './drizzle';
-import { movies, votes } from './schema';
-import { and, eq, ilike, sql, desc } from 'drizzle-orm';
+import { getConnection } from './db';
 import { performance } from 'perf_hooks';
 
 export interface Movie {
@@ -18,57 +16,50 @@ export interface MoviesResult {
 }
 
 export async function getMovies(sessionId?: string, filter?: string) {
-  const db = await getConnection();
+  const pool = await getConnection();
   const startTime = performance.now();
 
-  let filterCondition = undefined;
+  const params: any[] = [];
+  let whereClause = '';
+  
   if (filter) {
-    filterCondition = ilike(movies.title, `%${filter}%`);
+    whereClause = 'WHERE m.title ILIKE $1';
+    params.push(`%${filter}%`);
   }
 
-  const totalRecordsResult = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(movies)
-    .where(filterCondition);
+  const countResult = await pool.query(
+    `SELECT COUNT(*) as count FROM movies m ${whereClause}`,
+    params
+  );
+  const totalRecords = Number(countResult.rows[0]?.count) || 0;
 
-  const totalRecords = Number(totalRecordsResult[0]?.count) || 0;
-
-  let moviesQuery = db
-    .select({
-      id: movies.id,
-      title: movies.title,
-      score: movies.score,
-      lastVoteTime: movies.lastVoteTime,
-    })
-    .from(movies)
-    .where(filterCondition)
-    .orderBy(desc(movies.score))
-    .limit(8);
-
-  let moviesWithVotes;
-
+  let moviesResult;
   if (sessionId) {
-    moviesWithVotes = await db
-      .select({
-        id: movies.id,
-        title: movies.title,
-        score: movies.score,
-        lastVoteTime: movies.lastVoteTime,
-        hasVoted: sql<boolean>`CASE WHEN ${votes.sessionId} IS NOT NULL THEN true ELSE false END`,
-      })
-      .from(movies)
-      .leftJoin(
-        votes,
-        and(
-          eq(votes.movieId, movies.id),
-          eq(votes.sessionId, sql`${sessionId}::uuid`),
-        ),
-      )
-      .where(filterCondition)
-      .orderBy(desc(movies.score))
-      .limit(8);
+    const queryParams = filter ? [`%${filter}%`, sessionId] : [sessionId];
+    const paramIndex = filter ? 2 : 1;
+    moviesResult = await pool.query(
+      `SELECT 
+        m.id, 
+        m.title, 
+        m.score, 
+        m.last_vote_time as "lastVoteTime",
+        CASE WHEN v.session_id IS NOT NULL THEN true ELSE false END as "hasVoted"
+      FROM movies m
+      LEFT JOIN votes v ON v.movie_id = m.id AND v.session_id = $${paramIndex}::uuid
+      ${whereClause}
+      ORDER BY m.score DESC
+      LIMIT 8`,
+      queryParams
+    );
   } else {
-    moviesWithVotes = await moviesQuery;
+    moviesResult = await pool.query(
+      `SELECT id, title, score, last_vote_time as "lastVoteTime", false as "hasVoted"
+      FROM movies
+      ${whereClause}
+      ORDER BY score DESC
+      LIMIT 8`,
+      params
+    );
   }
 
   const endTime = performance.now();
@@ -76,11 +67,5 @@ export async function getMovies(sessionId?: string, filter?: string) {
 
   console.log(`Database query took ${queryTimeMs} ms`);
 
-  const data = moviesWithVotes.map((movie) => ({
-    ...movie,
-    // @ts-ignore
-    hasVoted: Boolean(movie.hasVoted),
-  }));
-
-  return { movies: data, totalRecords, queryTimeMs };
+  return { movies: moviesResult.rows, totalRecords, queryTimeMs };
 }
