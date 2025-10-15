@@ -1,6 +1,7 @@
 {
   "name": "aws-dsql-movies-demo",
   "requires": true,
+  "private": true,
   "packages": {
     "dependencies": {
       "@aws-sdk/dsql-signer": "^3.705.0",
