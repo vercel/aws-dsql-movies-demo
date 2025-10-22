@@ -15,9 +15,7 @@ DSQL [does not currently support](https://docs.aws.amazon.com/aurora-dsql/latest
 1. Add required environment variables to your vercel project
 ```
 AWS_ROLE_ARN=arn:aws:iam::YOUR_ACCOUNT:role
-DB_CLUSTER_ENDPOINT=your-dsql-clusterendpoint
-DB_USERNAME=postgres
-DB_NAME=postgres
+DB_CLUSTER_ID=your-cluster-id
 AWS_REGION=us-east-1
 ```
 

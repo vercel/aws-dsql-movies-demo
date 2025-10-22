@@ -38,10 +38,10 @@ export async function getMovies(sessionId?: string, filter?: string) {
     const queryParams = filter ? [`%${filter}%`, sessionId] : [sessionId];
     const paramIndex = filter ? 2 : 1;
     moviesResult = await pool.query(
-      `SELECT 
-        m.id, 
-        m.title, 
-        m.score, 
+      `SELECT
+        m.id,
+        m.title,
+        m.score,
         m.last_vote_time as "lastVoteTime",
         CASE WHEN v.session_id IS NOT NULL THEN true ELSE false END as "hasVoted"
       FROM movies m
@@ -54,9 +54,9 @@ export async function getMovies(sessionId?: string, filter?: string) {
   } else {
     moviesResult = await pool.query(
       `SELECT id, title, score, last_vote_time as "lastVoteTime", false as "hasVoted"
-      FROM movies
+      FROM movies m
       ${whereClause}
-      ORDER BY score DESC
+      ORDER BY m.score DESC
       LIMIT 8`,
       params
     );
