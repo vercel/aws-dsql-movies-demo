@@ -14,11 +14,12 @@ export async function getToken() {
     return cachedToken.token;
   }
 
+  const region = process.env.AWS_REGION || 'us-east-1';
   // DSQL token max validity is 604,800 seconds (1 week). We are using 1 hour in this case.
   const expiresInSeconds = 3600;
   const signer = new DsqlSigner({
     hostname: process.env.DB_CLUSTER_ENDPOINT!,
-    region: 'us-east-1',
+    region: region,
     expiresIn: expiresInSeconds,
     credentials: awsCredentialsProvider({
       roleArn: process.env.AWS_ROLE_ARN!,

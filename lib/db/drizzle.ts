@@ -18,9 +18,10 @@ export async function getToken() {
     return cachedToken.token;
   }
 
+  const region = process.env.AWS_REGION || 'us-east-1';
   const signer = new DsqlSigner({
     hostname: process.env.DB_CLUSTER_ENDPOINT!,
-    region: 'us-east-1',
+    region: region,
     credentials: awsCredentialsProvider({
       roleArn: process.env.AWS_ROLE_ARN!,
     }),
