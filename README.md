@@ -12,16 +12,14 @@ DSQL [does not currently support](https://docs.aws.amazon.com/aurora-dsql/latest
 
 ## Setup
 
-```
-
-```
 1. Pull vercel environment variables locally
 
-``bash
+```bash
 vercel env pull
-``
+```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
