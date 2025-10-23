@@ -12,17 +12,6 @@ let pool: Pool | null = null;
 let db: NodePgDatabase<typeof schema> | null = null;
 let cachedToken: { token: string; expiresAt: Date } | null = null;
 
-function getHostname() {
-  const clusterId = process.env.DB_CLUSTER_ID;
-  const region = process.env.AWS_REGION || 'us-east-1';
-
-  if (!clusterId) {
-    throw new Error('DB_CLUSTER_ID environment variable is required');
-  }
-
-  return `${clusterId}.dsql.${region}.on.aws`;
-}
-
 export async function getToken() {
   const now = new Date();
   if (cachedToken && cachedToken.expiresAt > now) {
@@ -31,7 +20,7 @@ export async function getToken() {
 
   const region = process.env.AWS_REGION || 'us-east-1';
   const signer = new DsqlSigner({
-    hostname: getHostname(),
+    hostname: process.env.DB_CLUSTER_ENDPOINT!,
     region: region,
     credentials: awsCredentialsProvider({
       roleArn: process.env.AWS_ROLE_ARN!,
@@ -67,7 +56,7 @@ export async function getConnection() {
     const token = await getToken();
 
     pool = new Pool({
-      host: getHostname(),
+      host: process.env.DB_CLUSTER_ENDPOINT!,
       user: 'admin',
       password: token,
       database: 'postgres',

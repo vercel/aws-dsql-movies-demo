@@ -8,17 +8,6 @@ config();
 let pool: Pool | null = null;
 let cachedToken: { token: string; expiresAt: Date } | null = null;
 
-function getHostname() {
-  const clusterId = process.env.DB_CLUSTER_ID;
-  const region = process.env.AWS_REGION || 'us-east-1';
-
-  if (!clusterId) {
-    throw new Error('DB_CLUSTER_ID environment variable is required');
-  }
-
-  return `${clusterId}.dsql.${region}.on.aws`;
-}
-
 export async function getToken() {
   const now = new Date();
   if (cachedToken && cachedToken.expiresAt > now) {
@@ -29,7 +18,7 @@ export async function getToken() {
   // DSQL token max validity is 604,800 seconds (1 week). We are using 1 hour in this case.
   const expiresInSeconds = 3600;
   const signer = new DsqlSigner({
-    hostname: getHostname(),
+    hostname: process.env.DB_CLUSTER_ENDPOINT!,
     region: region,
     expiresIn: expiresInSeconds,
     credentials: awsCredentialsProvider({
@@ -61,7 +50,7 @@ export async function getConnection() {
     const token = await getToken();
 
     pool = new Pool({
-      host: getHostname(),
+      host: process.env.DB_CLUSTER_ENDPOINT!,
       user: 'admin',
       password: token,
       database: 'postgres',
