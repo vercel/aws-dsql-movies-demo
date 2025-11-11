@@ -7,7 +7,6 @@ export default {
   dbCredentials: {
     host: process.env.DB_CLUSTER_ENDPOINT!,
     user: 'admin',
-    password: process.env.DB_TOKEN!,
     database: 'postgres',
     port: 5432,
     ssl: true,
