@@ -1,4 +1,4 @@
-import { getConnection } from './db';
+import { getPool } from './db';
 import { performance } from 'perf_hooks';
 
 export interface Movie {
@@ -16,12 +16,12 @@ export interface MoviesResult {
 }
 
 export async function getMovies(sessionId?: string, filter?: string) {
-  const pool = await getConnection();
+  const pool = await getPool();
   const startTime = performance.now();
 
   const params: any[] = [];
   let whereClause = '';
-  
+
   if (filter) {
     whereClause = 'WHERE m.title ILIKE $1';
     params.push(`%${filter}%`);
@@ -29,7 +29,7 @@ export async function getMovies(sessionId?: string, filter?: string) {
 
   const countResult = await pool.query(
     `SELECT COUNT(*) as count FROM movies m ${whereClause}`,
-    params
+    params,
   );
   const totalRecords = Number(countResult.rows[0]?.count) || 0;
 
@@ -49,7 +49,7 @@ export async function getMovies(sessionId?: string, filter?: string) {
       ${whereClause}
       ORDER BY m.score DESC
       LIMIT 8`,
-      queryParams
+      queryParams,
     );
   } else {
     moviesResult = await pool.query(
@@ -58,7 +58,7 @@ export async function getMovies(sessionId?: string, filter?: string) {
       ${whereClause}
       ORDER BY m.score DESC
       LIMIT 8`,
-      params
+      params,
     );
   }
 

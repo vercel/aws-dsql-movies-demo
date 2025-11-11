@@ -1,8 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import csv from 'csv-parser';
-import { closeConnection, getConnection } from './db';
+import { closePool, getPool } from './db';
 import { config } from 'dotenv';
+import { format } from 'node-pg-format';
 
 config({ path: '.env.local' });
 config();
@@ -35,26 +36,29 @@ async function readMovieTitlesFromCSV(): Promise<string[]> {
 }
 
 async function main() {
-  const pool = await getConnection();
+  const pool = await getPool();
   const movieTitles = await readMovieTitlesFromCSV();
   const defaultDate = new Date('2024-12-07');
-  const batchSize = 200;
+  const batchSize = 500;
 
   for (let i = 0; i < movieTitles.length; i += batchSize) {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
-      
-      const batch = movieTitles.slice(i, i + batchSize);
-      for (let j = 0; j < batch.length; j++) {
-        await client.query(
-          'INSERT INTO movies (id, title, score, last_vote_time) VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO NOTHING',
-          [i + j + 1, batch[j], 0, defaultDate]
-        );
-      }
-      
+
+      const titles = movieTitles.slice(i, i + batchSize);
+      const data = titles.map((title, j) => [i + j + 1, title, 0, defaultDate]);
+
+      const query = format(
+        'INSERT INTO movies (id, title, score, last_vote_time) VALUES %L ON CONFLICT (id) DO NOTHING',
+        data,
+      );
+      await client.query(query);
+
       await client.query('COMMIT');
-      console.log(`Inserted ${Math.min(i + batchSize, movieTitles.length)} / ${movieTitles.length} movies`);
+      console.log(
+        `Inserted ${Math.min(i + batchSize, movieTitles.length)} / ${movieTitles.length} movies`,
+      );
     } catch (error) {
       await client.query('ROLLBACK');
       throw error;
@@ -63,8 +67,9 @@ async function main() {
     }
   }
 
+  await closePool();
+
   console.log(`Seeded ${movieTitles.length} movies`);
-  await closeConnection();
   process.exit();
 }
 
