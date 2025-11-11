@@ -1,4 +1,4 @@
-import { getConnection } from "./db";
+import { getPool } from "./db";
 import { performance } from "perf_hooks";
 
 export interface Movie {
@@ -16,7 +16,7 @@ export interface MoviesResult {
 }
 
 export async function getMovies(sessionId?: string, filter?: string) {
-  const pool = await getConnection();
+  const pool = await getPool();
   const startTime = performance.now();
 
   const params: any[] = [];

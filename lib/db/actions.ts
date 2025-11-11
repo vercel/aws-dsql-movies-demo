@@ -1,7 +1,7 @@
 "use server";
 
 import { Movie } from "@/lib/db/queries";
-import { getConnection } from "./db";
+import { getPool } from "./db";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
@@ -10,7 +10,7 @@ export async function voteAction(
   score: number,
   lastVoteTime: Date,
 ) {
-  const pool = await getConnection();
+  const pool = await getPool();
   const cookieStore = await cookies();
 
   let sessionId = cookieStore.get("sessionId")?.value;
