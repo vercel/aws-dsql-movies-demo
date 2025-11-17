@@ -4,11 +4,11 @@
 
 This demo uses AWS DSQL Postgres with Next.js to fetch movies from the database. It is able to securely connect to DSQL without using hardcoded access tokens through Vercel's [OIDC Federation](https://vercel.com/docs/security/secure-backend-access/oidc).
 
+![This is an alt text.](/app/Vercel-AWS-GitHub-DSQL.png)
+
 **Demo:** 
+[View Demo](https://dsql.vercel.app/)
 
-## Caveats
-
-DSQL [does not currently support](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/working-with-postgresql-compatibility-unsupported-features.html):
 
 ## Setup
 
