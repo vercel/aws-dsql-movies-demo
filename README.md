@@ -7,7 +7,6 @@ This demo uses AWS DSQL Postgres with Next.js to fetch movies from the database.
 **Demo:** 
 
 ## Caveats
-
 DSQL [does not currently support](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/working-with-postgresql-compatibility-unsupported-features.html):
 
 ## Setup
@@ -21,20 +20,20 @@ vercel env pull
 2. Install dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
 3. Run migrations to create tables:
 ```bash
-npm run db:migrate
+pnpm run db:migrate
 ```
 
 4. Seed the database with movie data:
 ```bash
-npm run db:seed
+pnpm run db:seed
 ```
 
 5. Start the development server:
 ```bash
-npm run dev
+pnpm run dev
 ```
