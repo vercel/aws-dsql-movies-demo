@@ -1,15 +1,22 @@
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Faws-dsql-movies-demo)
+
 
 # AWS Aurora DQSL Movies Demo
 
 This demo uses AWS DSQL Postgres with Next.js to fetch movies from the database. It is able to securely connect to DSQL without using hardcoded access tokens through Vercel's [OIDC Federation](https://vercel.com/docs/security/secure-backend-access/oidc).
 
+![This is an alt text.](/public/Vercel-AWS-GitHub-DSQL.png)
+
 **Demo:** 
+[View Demo](https://dsql.vercel.app/)
 
-## Caveats
-DSQL [does not currently support](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/working-with-postgresql-compatibility-unsupported-features.html):
 
-## Setup
+**Getting Started:** 
+* Click the "Deploy" button to clone this repo, create a new Vercel project, setup the Neon integration, and provision a new Neon database:
+* [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Faws-dsql-movies-demo)
+
+* Once the process is complete, you can clone the newly created GitHub repository and start making changes locally.
+
+## Local Setup
 
 1. Pull vercel environment variables locally
 

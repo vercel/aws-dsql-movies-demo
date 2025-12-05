@@ -1,8 +1,18 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Explanation() {
   return (
     <div className="text-gray-800 dark:text-gray-200 text-sm border border-dashed border-gray-300 dark:border-gray-600 p-4 mb-4 font-mono bg-white dark:bg-gray-900">
+      <div className="mb-4">
+        <Image
+          src="/Vercel-AWS-GitHub-DSQL.png"
+          alt="Vercel AWS DSQL native integration"
+          width={600}
+          height={400}
+          className="w-full h-auto"
+        />
+      </div>
       <p className="mb-2">
         This app uses <b className="font-bold">AWS DSQL Postgres</b> with
         Next.js and Vercel (
@@ -51,8 +61,7 @@ export default function Explanation() {
           <em className="text-gray-900 dark:text-gray-100 not-italic">
             strong consistency
           </em>
-          . Currently, DSQL only offers two different regions (US East and US
-          West) while in preview. DSQL is ACID, severless and scales to zero,
+          . DSQL is ACID, severless and scales to zero,
           and separates storage from compute. It also has 99.99% availability in
           single-region configuration and 99.999% in multi-region.{' '}
           <Link
@@ -68,3 +77,4 @@ export default function Explanation() {
     </div>
   );
 }
+
