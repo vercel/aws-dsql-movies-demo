@@ -1,11 +1,7 @@
-import type { NextConfig } from 'next';
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    dynamicIO: true,
-    ppr: true,
-    inlineCss: true,
-  },
+  experimental: {},
 };
 
 export default nextConfig;
