@@ -1,4 +1,4 @@
-import { awsCredentialsProvider } from '@vercel/functions/oidc';
+import { awsCredentialsProvider } from '@vercel/oidc-aws-credentials-provider';
 import { DsqlSigner } from '@aws-sdk/dsql-signer';
 import { Pool } from 'pg';
 import { config } from 'dotenv';
