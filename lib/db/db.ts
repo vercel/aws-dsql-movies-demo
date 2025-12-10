@@ -54,7 +54,7 @@ export async function getConnection() {
       user: 'admin',
       password: token,
       database: process.env.PGDATABASE!,
-      port: process.env.PGPORT!,
+      port: Number(process.env.PGPORT!),
       ssl: true,
       max: 20,
     });
