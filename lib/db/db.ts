@@ -18,8 +18,8 @@ export async function getToken() {
   // DSQL token max validity is 604,800 seconds (1 week). We are using 1 hour in this case.
   const expiresInSeconds = 3600;
   const signer = new DsqlSigner({
-    hostname: process.env.DB_CLUSTER_ENDPOINT!,
-    region: region,
+    hostname: process.env.PGHOST!,
+    region: process.env.AWS_REGION!,
     expiresIn: expiresInSeconds,
     credentials: awsCredentialsProvider({
       roleArn: process.env.AWS_ROLE_ARN!,
@@ -50,11 +50,11 @@ export async function getConnection() {
     const token = await getToken();
 
     pool = new Pool({
-      host: process.env.DB_CLUSTER_ENDPOINT!,
+      host: process.env.PGHOST!,
       user: 'admin',
       password: token,
       database: 'postgres',
-      port: 5432,
+      port: process.env.PGPORT,
       ssl: true,
       max: 20,
     });
