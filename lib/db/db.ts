@@ -53,8 +53,8 @@ export async function getConnection() {
       host: process.env.PGHOST!,
       user: 'admin',
       password: token,
-      database: 'postgres',
-      port: process.env.PGPORT,
+      database: process.env.PGDATABASE!,
+      port: process.env.PGPORT!,
       ssl: true,
       max: 20,
     });
