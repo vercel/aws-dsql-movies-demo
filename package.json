@@ -19,6 +19,7 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@types/pg": "^8.11.10",
     "@vercel/functions": "^1.5.1",
+    "@vercel/oidc-aws-credentials-provider": "^3.0.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",

@@ -20,6 +20,9 @@ importers:
       '@vercel/functions':
         specifier: ^1.5.1
         version: 1.6.0(@aws-sdk/credential-provider-web-identity@3.946.0)
+      '@vercel/oidc-aws-credentials-provider':
+        specifier: ^3.0.5
+        version: 3.0.5
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -904,6 +907,14 @@ packages:
     peerDependenciesMeta:
       '@aws-sdk/credential-provider-web-identity':
         optional: true
+
+  '@vercel/oidc-aws-credentials-provider@3.0.5':
+    resolution: {integrity: sha512-wJtOrJzJNpSfRkZL+MXzrzOlXEsDQjNJNjcOgUMbYQCVOFuxKFeSREiTkwUG1uROzGsYVJcNCn3exP8blXsIQA==}
+    engines: {node: '>= 20'}
+
+  '@vercel/oidc@3.0.5':
+    resolution: {integrity: sha512-fnYhv671l+eTTp48gB4zEsTW/YtRgRPnkI2nT7x6qw5rkI1Lq2hTmQIpHPgyThI0znLK+vX2n9XxKdXZ7BUbbw==}
+    engines: {node: '>= 20'}
 
   any-promise@1.3.0:
     resolution: {integrity: sha512-7UvmKalWRt1wgjL1RrGxoSJW/0QZFIegpeGvZG9kjp8vrRu55XTHbwnqq2GpXm9uLbcuhxm3IqX9OB4MZR1b2A==}
@@ -2556,6 +2567,15 @@ snapshots:
   '@vercel/functions@1.6.0(@aws-sdk/credential-provider-web-identity@3.946.0)':
     optionalDependencies:
       '@aws-sdk/credential-provider-web-identity': 3.946.0
+
+  '@vercel/oidc-aws-credentials-provider@3.0.5':
+    dependencies:
+      '@aws-sdk/credential-provider-web-identity': 3.946.0
+      '@vercel/oidc': 3.0.5
+    transitivePeerDependencies:
+      - aws-crt
+
+  '@vercel/oidc@3.0.5': {}
 
   any-promise@1.3.0: {}
 
