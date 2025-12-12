@@ -1,10 +1,10 @@
-import { awsCredentialsProvider } from '@vercel/functions/oidc';
-import { DsqlSigner } from '@aws-sdk/dsql-signer';
-import { Pool } from 'pg';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import * as schema from './schema';
-import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { config } from 'dotenv';
+import { awsCredentialsProvider } from "@vercel/functions/oidc";
+import { DsqlSigner } from "@aws-sdk/dsql-signer";
+import { Pool } from "pg";
+import { drizzle } from "drizzle-orm/node-postgres";
+import * as schema from "./schema";
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { config } from "dotenv";
 
 config();
 
@@ -18,9 +18,9 @@ export async function getToken() {
     return cachedToken.token;
   }
 
-  const region = process.env.AWS_REGION || 'us-east-1';
+  const region = process.env.AWS_REGION || "us-east-1";
   const signer = new DsqlSigner({
-    hostname: process.env.DB_CLUSTER_ENDPOINT!,
+    hostname: process.env.PGHOST!,
     region: region,
     credentials: awsCredentialsProvider({
       roleArn: process.env.AWS_ROLE_ARN!,
@@ -56,18 +56,18 @@ export async function getConnection() {
     const token = await getToken();
 
     pool = new Pool({
-      host: process.env.DB_CLUSTER_ENDPOINT!,
-      user: 'admin',
+      host: process.env.PGHOST!,
+      user: process.env.PGUSER || "admin",
       password: token,
-      database: 'postgres',
-      port: 5432,
+      database: process.env.PGDATABASE || "postgres",
+      port: Number(process.env.PGPORT) || 5432,
       ssl: true,
       max: 20,
     });
     db = drizzle(pool, { schema });
     return db;
   } catch (error) {
-    console.error('Failed to create database connection:', error);
+    console.error("Failed to create database connection:", error);
     throw error;
   }
 }
