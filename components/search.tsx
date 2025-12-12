@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { Input } from '@/components/ui/input';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useRef, useEffect, useState } from 'react';
+import { Input } from "@/components/ui/input";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useRef, useEffect, useState } from "react";
 
 interface SearchInputProps {
   inputValue?: string;
   onChange: any;
 }
 
-export function Search({ inputValue = '', onChange }: SearchInputProps) {
+export function Search({ inputValue = "", onChange }: SearchInputProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -20,17 +20,17 @@ export function Search({ inputValue = '', onChange }: SearchInputProps) {
     };
 
     checkMobile();
-    window.addEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
 
-    return () => window.removeEventListener('resize', checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (inputValue) {
-      params.set('filter', inputValue);
+      params.set("filter", inputValue);
     } else {
-      params.delete('filter');
+      params.delete("filter");
     }
     router.replace(`/?${params.toString()}`, { scroll: false });
   }, [router, inputValue]);
@@ -38,16 +38,16 @@ export function Search({ inputValue = '', onChange }: SearchInputProps) {
   useEffect(() => {
     if (!isMobile) {
       const handleKeyPress = (e: KeyboardEvent) => {
-        if (e.key === '/' && document.activeElement !== inputRef.current) {
+        if (e.key === "/" && document.activeElement !== inputRef.current) {
           e.preventDefault();
           inputRef.current?.focus();
         }
       };
 
-      document.addEventListener('keydown', handleKeyPress);
+      document.addEventListener("keydown", handleKeyPress);
 
       return () => {
-        document.removeEventListener('keydown', handleKeyPress);
+        document.removeEventListener("keydown", handleKeyPress);
       };
     }
   }, [isMobile]);

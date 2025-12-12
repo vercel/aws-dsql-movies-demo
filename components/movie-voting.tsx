@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { useOptimistic, useTransition, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
-import { ChevronUp, ChevronDown } from 'lucide-react';
-import { Movie } from '@/lib/db/queries';
-import { voteAction } from '@/lib/db/actions';
-import { Search } from './search';
-import { cn } from '@/lib/utils';
+import { useOptimistic, useTransition, useMemo } from "react";
+import { Button } from "@/components/ui/button";
+import { ChevronUp, ChevronDown } from "lucide-react";
+import { Movie } from "@/lib/db/queries";
+import { voteAction } from "@/lib/db/actions";
+import { Search } from "./search";
+import { cn } from "@/lib/utils";
 
 export function highlightMatch(text: string, highlight: string) {
   if (!highlight.trim()) {
     return text;
   }
-  const regex = new RegExp(`(${highlight})`, 'gi');
+  const regex = new RegExp(`(${highlight})`, "gi");
   return text.replace(
     regex,
     '<span class="bg-yellow-300 dark:bg-yellow-700">$1</span>',
@@ -86,11 +86,11 @@ export function MovieVoting({
     });
   };
 
-  const handleVote = async (movie: Movie, voteType: 'up' | 'down') => {
+  const handleVote = async (movie: Movie, voteType: "up" | "down") => {
     startTransition(async () => {
       const updatedMovie: Movie = {
         ...movie,
-        score: movie.score + (voteType === 'up' ? 1 : -1),
+        score: movie.score + (voteType === "up" ? 1 : -1),
         lastVoteTime: new Date(),
         hasVoted: true,
       };
@@ -119,8 +119,8 @@ export function MovieVoting({
                 <Button
                   size="sm"
                   variant="ghost"
-                  onClick={() => handleVote(movie, 'up')}
-                  className={cn('p-0 h-6 w-6', movie.hasVoted && '!opacity-10')}
+                  onClick={() => handleVote(movie, "up")}
+                  className={cn("p-0 h-6 w-6", movie.hasVoted && "!opacity-10")}
                   aria-label={`Upvote ${movie.title}`}
                   disabled={movie.hasVoted}
                 >
@@ -132,8 +132,8 @@ export function MovieVoting({
                 <Button
                   size="sm"
                   variant="ghost"
-                  onClick={() => handleVote(movie, 'down')}
-                  className={cn('p-0 h-6 w-6', movie.hasVoted && '!opacity-10')}
+                  onClick={() => handleVote(movie, "down")}
+                  className={cn("p-0 h-6 w-6", movie.hasVoted && "!opacity-10")}
                   aria-label={`Downvote ${movie.title}`}
                   disabled={movie.hasVoted}
                 >
@@ -157,8 +157,8 @@ export function MovieVoting({
         <p className="text-center text-gray-500">No movies found</p>
       ) : (
         <p className="text-xs italic text-gray-500">
-          Fetched {totalRecords} movie{totalRecords == 1 ? '' : 's'} in{' '}
-          {queryTimeMs} ms 
+          Fetched {totalRecords} movie{totalRecords == 1 ? "" : "s"} in{" "}
+          {queryTimeMs} ms
         </p>
       )}
     </div>

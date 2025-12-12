@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import Image from 'next/image';
+import Link from "next/link";
+import Image from "next/image";
 
 export default function Explanation() {
   return (
@@ -33,7 +33,7 @@ export default function Explanation() {
         </summary>
         <p className="p-5 mt-2 bg-gray-100 dark:bg-gray-800">
           Movies are fetched from the Postgres database when the page loads. It
-          has been seeded with the top 5000 movies from{' '}
+          has been seeded with the top 5000 movies from{" "}
           <Link
             href="https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata"
             target="_blank"
@@ -41,11 +41,11 @@ export default function Explanation() {
             className="text-gray-900 dark:text-white border-b border-gray-900 dark:border-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
             TMDB.
-          </Link>{' '}
-          When a user votes on a movie,{' '}
+          </Link>{" "}
+          When a user votes on a movie,{" "}
           <code className="bg-gray-200 dark:bg-gray-700 px-1">
             useOptimistic
-          </code>{' '}
+          </code>{" "}
           is used to instantly show the new score and updated time.
         </p>
       </details>
@@ -57,13 +57,13 @@ export default function Explanation() {
           </span>
         </summary>
         <p className="p-5 mt-2 bg-gray-100 dark:bg-gray-800">
-          Our DSQL database is replicated to multiple regions with{' '}
+          Our DSQL database is replicated to multiple regions with{" "}
           <em className="text-gray-900 dark:text-gray-100 not-italic">
             strong consistency
           </em>
-          . DSQL is ACID, severless and scales to zero,
-          and separates storage from compute. It also has 99.99% availability in
-          single-region configuration and 99.999% in multi-region.{' '}
+          . DSQL is ACID, severless and scales to zero, and separates storage
+          from compute. It also has 99.99% availability in single-region
+          configuration and 99.999% in multi-region.{" "}
           <Link
             href="https://aws.amazon.com/blogs/database/introducing-amazon-aurora-dsql/"
             target="_blank"
@@ -77,4 +77,3 @@ export default function Explanation() {
     </div>
   );
 }
-

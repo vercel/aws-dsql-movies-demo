@@ -1,9 +1,9 @@
-import Explanation from '@/components/explanation';
-import Loading from '@/components/loading';
-import { MovieVoting } from '@/components/movie-voting';
-import { getMovies } from '@/lib/db/queries';
-import { cookies } from 'next/headers';
-import { Suspense } from 'react';
+import Explanation from "@/components/explanation";
+import Loading from "@/components/loading";
+import { MovieVoting } from "@/components/movie-voting";
+import { getMovies } from "@/lib/db/queries";
+import { cookies } from "next/headers";
+import { Suspense } from "react";
 
 type Props = {
   searchParams: Promise<{ filter: string | undefined }>;
@@ -23,7 +23,7 @@ export default async function HomePage({ searchParams }: Props) {
 async function Movies({ searchParams }: Props) {
   const { filter } = await searchParams;
   const cookieStore = await cookies();
-  const sessionId = cookieStore.get('sessionId')?.value;
+  const sessionId = cookieStore.get("sessionId")?.value;
   const { movies, totalRecords, queryTimeMs } = await getMovies(
     sessionId,
     filter,
@@ -32,7 +32,7 @@ async function Movies({ searchParams }: Props) {
   return (
     <MovieVoting
       movies={movies}
-      highlight={filter || ''}
+      highlight={filter || ""}
       queryTimeMs={queryTimeMs}
       totalRecords={totalRecords}
     />
