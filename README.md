@@ -14,6 +14,10 @@ Click the "Deploy" button to clone this repo, create a new Vercel project, setup
 
 Once the process is complete, you can clone the newly created GitHub repository and start making changes locally.
 
+## Requirements
+
+- Installed Aurora DSQL. You can do that via [Vercel Marketplace](https://vercel.com/marketplace/aws)
+
 ## Local Setup
 
 1. Pull vercel environment variables locally
