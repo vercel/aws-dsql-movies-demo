@@ -11,7 +11,6 @@ interface SearchInputProps {
 
 export function Search({ inputValue = '', onChange }: SearchInputProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const inputRef = useRef<HTMLInputElement>(null);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -27,14 +26,14 @@ export function Search({ inputValue = '', onChange }: SearchInputProps) {
   }, []);
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams(window.location.search);
     if (inputValue) {
       params.set('filter', inputValue);
     } else {
       params.delete('filter');
     }
     router.replace(`/?${params.toString()}`, { scroll: false });
-  }, [router, inputValue, searchParams]);
+  }, [router, inputValue]);
 
   useEffect(() => {
     if (!isMobile) {
