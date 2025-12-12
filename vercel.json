@@ -1,0 +1,3 @@
+{
+  "buildCommand": "pnpm db:migrate && pnpm db:seed && pnpm build"
+}
