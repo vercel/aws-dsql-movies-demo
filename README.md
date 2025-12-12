@@ -5,8 +5,7 @@ This demo uses AWS DSQL Postgres with Next.js to fetch movies from the database.
 [![This is an alt text.](/public/Vercel-AWS-GitHub-DSQL.png)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Faws-dsql-movies-demo&project-name=aws-dsql-movies-demo&repository-name=aws-dsql-movies-demo&products=%5B%7B%22type%22%3A%22integration%22%2C%22integrationSlug%22%3A%22aws%22%2C%22productSlug%22%3A%22aws-dsql%22%2C%22protocol%22%3A%22storage%22%7D%5D)
 
 **Demo:**
-QQQQQQ
-[View Demo](https://dsql.vercel.app/)
+[View Demo](https://aws-dsql-movies-demo.labs.vercel.dev)
 
 **Getting Started:**
 Click the "Deploy" button to clone this repo, create a new Vercel project, setup the AWS integration, and provision a new DSQL database:
