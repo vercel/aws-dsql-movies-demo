@@ -34,6 +34,60 @@ async function readMovieTitlesFromCSV(): Promise<string[]> {
   });
 }
 
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 5,
+  initialDelayMs: number = 1000,
+): Promise<T> {
+  let lastError: any;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      if (attempt < maxRetries) {
+        const delayMs = initialDelayMs * Math.pow(2, attempt);
+        console.log(
+          `Attempt ${attempt + 1} failed, retrying in ${delayMs}ms...`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+  }
+  throw lastError;
+}
+
+async function insertBatch(
+  pool: any,
+  movieTitles: string[],
+  startIndex: number,
+  batchSize: number,
+  defaultDate: Date,
+): Promise<void> {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    const batch = movieTitles.slice(startIndex, startIndex + batchSize);
+    for (let j = 0; j < batch.length; j++) {
+      await client.query(
+        "INSERT INTO movies (id, title, score, last_vote_time) VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO NOTHING",
+        [startIndex + j + 1, batch[j], 0, defaultDate],
+      );
+    }
+
+    await client.query("COMMIT");
+    console.log(
+      `Inserted ${Math.min(startIndex + batchSize, movieTitles.length)} / ${movieTitles.length} movies`,
+    );
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
 async function main() {
   const pool = await getConnection();
   const movieTitles = await readMovieTitlesFromCSV();
@@ -41,28 +95,9 @@ async function main() {
   const batchSize = 200;
 
   for (let i = 0; i < movieTitles.length; i += batchSize) {
-    const client = await pool.connect();
-    try {
-      await client.query("BEGIN");
-
-      const batch = movieTitles.slice(i, i + batchSize);
-      for (let j = 0; j < batch.length; j++) {
-        await client.query(
-          "INSERT INTO movies (id, title, score, last_vote_time) VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO NOTHING",
-          [i + j + 1, batch[j], 0, defaultDate],
-        );
-      }
-
-      await client.query("COMMIT");
-      console.log(
-        `Inserted ${Math.min(i + batchSize, movieTitles.length)} / ${movieTitles.length} movies`,
-      );
-    } catch (error) {
-      await client.query("ROLLBACK");
-      throw error;
-    } finally {
-      client.release();
-    }
+    await retryWithBackoff(() =>
+      insertBatch(pool, movieTitles, i, batchSize, defaultDate),
+    );
   }
 
   console.log(`Seeded ${movieTitles.length} movies`);
