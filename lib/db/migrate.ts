@@ -1,13 +1,13 @@
 import dotenv from "dotenv";
 import path from "path";
-import { closeConnection, getConnection } from "./db";
+import { closePool, getPool } from "./db";
 import fs from "fs";
 
 dotenv.config({ path: ".env.local" });
 dotenv.config();
 
 async function main() {
-  const pool = await getConnection();
+  const pool = await getPool();
   const client = await pool.connect();
 
   try {
@@ -35,9 +35,8 @@ async function main() {
         console.log(`Running migration: ${file}`);
         const filePath = path.join(migrationsFolder, file);
         const migration = fs.readFileSync(filePath, "utf8");
-
         const statements = migration
-          .split("--> statement-breakpoint")
+          .split("\n\n")
           .map((s) => s.trim())
           .filter((s) => s.length > 0);
 
@@ -69,7 +68,7 @@ async function main() {
     console.log("Migrations complete");
   } finally {
     client.release();
-    await closeConnection();
+    await closePool();
   }
 }
 

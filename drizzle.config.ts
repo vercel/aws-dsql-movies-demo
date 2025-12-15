@@ -7,7 +7,6 @@ export default {
   dbCredentials: {
     host: process.env.PGHOST!,
     user: "admin",
-    password: process.env.PGPASSWORD!,
     database: "postgres",
     port: 5432,
     ssl: true,
