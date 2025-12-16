@@ -1,37 +1,34 @@
 import { awsCredentialsProvider } from "@vercel/oidc-aws-credentials-provider";
 import { AuroraDSQLPool } from "@aws/aurora-dsql-node-postgres-connector";
-import { Pool } from "pg";
+import { ClientBase } from "pg";
 import { attachDatabasePool } from "@vercel/functions";
 
-let pool: Pool | null = null;
+const pool = new AuroraDSQLPool({
+  host: process.env.PGHOST!,
+  region: process.env.AWS_REGION!,
+  user: process.env.PGUSER || "admin",
+  database: process.env.PGDATABASE || "postgres",
+  port: Number(process.env.PGPORT || 5432),
+  customCredentialsProvider: awsCredentialsProvider({
+    roleArn: process.env.AWS_ROLE_ARN!,
+    clientConfig: { region: process.env.AWS_REGION! },
+  }),
+});
+attachDatabasePool(pool);
 
-export async function getPool() {
-  if (pool) {
-    return pool;
-  }
-
-  try {
-    pool = new AuroraDSQLPool({
-      host: process.env.PGHOST!,
-      region: process.env.AWS_REGION || "us-east-1",
-      user: process.env.PGUSER || "admin",
-      database: process.env.PGDATABASE || "postgres",
-      port: Number(process.env.PGPORT || 5432),
-      customCredentialsProvider: awsCredentialsProvider({
-        roleArn: process.env.AWS_ROLE_ARN!,
-      }),
-    });
-    attachDatabasePool(pool);
-    return pool;
-  } catch (error) {
-    console.error("Failed to create database connection pool:", error);
-    throw error;
-  }
+// Single query transaction.
+export async function query(sql: string, args: unknown[]) {
+  return pool.query(sql, args);
 }
 
-export async function closePool() {
-  if (pool) {
-    await pool.end();
-    pool = null;
+// Use it for multiple queries transaction.
+export async function withConnection<T>(
+  fn: (client: ClientBase) => Promise<T>,
+): Promise<T> {
+  const client = await pool.connect();
+  try {
+    return await fn(client);
+  } finally {
+    client.release();
   }
 }
