@@ -1,9 +1,10 @@
 import fs from "fs";
 import path from "path";
 import csv from "csv-parser";
-import { closePool, getPool } from "./db";
 import { config } from "dotenv";
 import { format } from "node-pg-format";
+import { AuroraDSQLPool } from "@aws/aurora-dsql-node-postgres-connector";
+import { awsCredentialsProvider } from "@vercel/oidc-aws-credentials-provider";
 
 config({ path: ".env.local" });
 config();
@@ -99,18 +100,30 @@ async function insertBatch(
 }
 
 async function main() {
-  const pool = await getPool();
   const movieTitles = await readMovieTitlesFromCSV();
   const defaultDate = new Date("2024-12-07");
   const batchSize = 500;
 
-  for (let i = 0; i < movieTitles.length; i += batchSize) {
-    await retryWithBackoff(() =>
-      insertBatch(pool, movieTitles, i, batchSize, defaultDate),
-    );
+  const pool = new AuroraDSQLPool({
+    host: process.env.PGHOST!,
+    region: process.env.AWS_REGION!,
+    user: process.env.PGUSER || "admin",
+    database: process.env.PGDATABASE || "postgres",
+    port: Number(process.env.PGPORT || 5432),
+    customCredentialsProvider: awsCredentialsProvider({
+      roleArn: process.env.AWS_ROLE_ARN!,
+      clientConfig: { region: process.env.AWS_REGION! },
+    }),
+  });
+  try {
+    for (let i = 0; i < movieTitles.length; i += batchSize) {
+      await retryWithBackoff(() =>
+        insertBatch(pool, movieTitles, i, batchSize, defaultDate),
+      );
+    }
+  } finally {
+    await pool.end();
   }
-
-  await closePool();
 
   console.log(`Seeded ${movieTitles.length} movies`);
   process.exit();

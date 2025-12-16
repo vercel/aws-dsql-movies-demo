@@ -1,13 +1,24 @@
 import dotenv from "dotenv";
 import path from "path";
-import { closePool, getPool } from "./db";
 import fs from "fs";
+import { AuroraDSQLPool } from "@aws/aurora-dsql-node-postgres-connector";
+import { awsCredentialsProvider } from "@vercel/oidc-aws-credentials-provider";
 
 dotenv.config({ path: ".env.local" });
 dotenv.config();
 
 async function main() {
-  const pool = await getPool();
+  const pool = new AuroraDSQLPool({
+    host: process.env.PGHOST!,
+    region: process.env.AWS_REGION!,
+    user: process.env.PGUSER || "admin",
+    database: process.env.PGDATABASE || "postgres",
+    port: Number(process.env.PGPORT || 5432),
+    customCredentialsProvider: awsCredentialsProvider({
+      roleArn: process.env.AWS_ROLE_ARN!,
+      clientConfig: { region: process.env.AWS_REGION! },
+    }),
+  });
   const client = await pool.connect();
 
   try {
@@ -68,7 +79,7 @@ async function main() {
     console.log("Migrations complete");
   } finally {
     client.release();
-    await closePool();
+    await pool.end();
   }
 }
 
