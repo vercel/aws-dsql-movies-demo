@@ -1,15 +1,32 @@
 import dotenv from "dotenv";
 import path from "path";
-import { closeConnection, getConnection } from "./db";
 import fs from "fs";
+import { DsqlSigner } from "@aws-sdk/dsql-signer";
+import { awsCredentialsProvider } from "@vercel/oidc-aws-credentials-provider";
+import { Client } from "pg";
 
 dotenv.config({ path: ".env.local" });
 dotenv.config();
 
 async function main() {
-  const pool = await getConnection();
-  const client = await pool.connect();
-
+  const signer = new DsqlSigner({
+    hostname: process.env.PGHOST!,
+    region: process.env.AWS_REGION!,
+    expiresIn: 3600,
+    credentials: awsCredentialsProvider({
+      roleArn: process.env.AWS_ROLE_ARN!,
+      clientConfig: { region: process.env.AWS_REGION! },
+    }),
+  });
+  const client = new Client({
+    host: process.env.PGHOST!,
+    database: process.env.PGDATABASE!,
+    user: process.env.PGUSER || "admin",
+    // The auth token value can be cached for up to 15 minutes (900 seconds) if desired.
+    password: () => signer.getDbConnectAdminAuthToken(),
+    port: Number(process.env.PGPORT!),
+    ssl: true,
+  });
   try {
     await client.query(`
       CREATE TABLE IF NOT EXISTS migrations (
@@ -68,8 +85,7 @@ async function main() {
 
     console.log("Migrations complete");
   } finally {
-    client.release();
-    await closeConnection();
+    client.end();
   }
 }
 
